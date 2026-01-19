@@ -10,7 +10,7 @@ def pokemon_add(request):
 
 def pokemon_list(request):
     pokemons=Pokemon.objects.all()
-    output = ", ".join([p.nome for p in pokemons])
+    output = ", ".join([f"Nome:{p.nome}- ID:{p.pk}" for p in pokemons])
     return HttpResponse(f"Lista Pokémon nel database: {output}")
 
 def pokemon_delete(request, pk):
