@@ -9,32 +9,31 @@ from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 @csrf_exempt  #comunica al server che riceverà chiamate da API differenti (Con questo comando il server ha il via libera a eseguire tutte le richieste)
-@require_POST   #decoratore
-def add_pokemon(request):
-    try:
-        data = json.loads(request.body)
-        pokemon = Pokemon.objects.create(name=data['name'], pokedex_id=data['pokedex_id'])
-        return JsonResponse({'id': str(pokemon.id), 'name': pokemon.name, 'pokedex_id': pokemon.pokedex_id}, status=201)
-    except json.JSONDecodeError:
-        return JsonResponse({'error': 'JSON non valido'}, status=400)
-    except KeyError as e:
-        return JsonResponse({'error': f'Campo mancante: {e}'}, status=400)
-    except IntegrityError:
-        return JsonResponse({'error': 'Pokemon con questo nome già esistente'}, status=400)
-    except OperationalError:
-        return JsonResponse({'error': 'Database non disponibile'}, status=503)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-        
-@require_GET
-def get_pokemon_list(request):
-    try:
-        pokemon_list=list(Pokemon.objects.all().values())
-        return JsonResponse(pokemon_list,safe=False)
-    except OperationalError:
-        return JsonResponse({'error':'Database non disponibile'}, status=503)
-    except Exception as e:
-        return JsonResponse({'error': {e}}, status=500)
+@require_http_methods(['POST', 'GET'])   #decoratore
+def pokemon_list(request):
+    if request.method=='POST':
+        try:
+            data = json.loads(request.body)
+            pokemon = Pokemon.objects.create(name=data['name'], pokedex_id=data['pokedex_id'])
+            return JsonResponse({'id': str(pokemon.id), 'name': pokemon.name, 'pokedex_id': pokemon.pokedex_id}, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'JSON non valido'}, status=400)
+        except KeyError as e:
+            return JsonResponse({'error': f'Campo mancante: {e}'}, status=400)
+        except IntegrityError:
+            return JsonResponse({'error': 'Pokemon con questo nome già esistente'}, status=400)
+        except OperationalError:
+            return JsonResponse({'error': 'Database non disponibile'}, status=503)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    if request.method=='GET':     
+        try:
+            pokemon_list=list(Pokemon.objects.all().values())
+            return JsonResponse(pokemon_list,safe=False)
+        except OperationalError:
+            return JsonResponse({'error':'Database non disponibile'}, status=503)
+        except Exception as e:
+            return JsonResponse({'error': {e}}, status=500)       
 
 @csrf_exempt    
 @require_http_methods(['DELETE'])
