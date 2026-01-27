@@ -69,10 +69,10 @@ def add_tag(request):
 
         task.tags.add(tag)
         return JsonResponse({
-                'message': "Tag_aggiunto",
-                'task_id': task.id,
-                'tag': list[task.tags.name,task.tags.id]
-            }, status=201)
+                'message': "Tag aggiunto",
+                'task_id': str(task.id),
+                'tag': list(task.tags.values('id', 'name'))
+            }, status=200)
     
     except json.JSONDecodeError:
         return JsonResponse({'error': 'JSON non valido'}, status=400)
@@ -81,7 +81,4 @@ def add_tag(request):
         return JsonResponse({'error': f'Campo mancante: {e}'}, status=400)
     
     except Project.DoesNotExist:
-        return JsonResponse({'error': 'tag non trovato'}, status=404)
-    
-    except IntegrityError:
-        return JsonResponse({'error': 'Task già esistente'}, status=409)
+        return JsonResponse({'error': 'Tag non trovato'}, status=404)

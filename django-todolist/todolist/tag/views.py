@@ -34,3 +34,22 @@ def create_tag(request):
     
     except IntegrityError:
         return JsonResponse({'error': 'Tag già esistente'}, status=409)
+
+@csrf_exempt
+@require_GET
+def get_tags(request):
+    try:
+        tag_list=list(Task.objects.all().values())
+        return JsonResponse(tag_list,safe=False,status=200)
+    except OperationalError:
+        return JsonResponse({'error': 'Database non risponibile'}, status=503)
+    
+
+@csrf_exempt
+@require_GET
+def get_tags_by_task_id(request,task_id):
+    try:
+        tag_list=list(Tag.objects.filter(tasks=task_id).values())
+        return JsonResponse(tag_list,safe=False,status=200)
+    except OperationalError:
+        return JsonResponse({'error': 'Database non risponibile'}, status=503)
