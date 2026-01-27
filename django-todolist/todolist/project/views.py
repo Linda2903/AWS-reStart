@@ -19,9 +19,9 @@ def get_projects_list(request):
         projects_list=[]
         for project in projects:
             project_data={
-                'id': project_data.id,
-                'name': project_data.name,
-                'details':NotImplemented
+                'id': project.id,
+                'name': project.name,
+                'details':None
             }
             if hasattr(project,'project'):
                 project_data['details']={

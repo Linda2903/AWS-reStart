@@ -15,7 +15,7 @@ def update_details_project(request,id):
         projects_details=Project_details.objects.get(id=id)
 
 
-        if data.get["notes"]:
+        if data["notes"]:
             projects_details.notes=data['notes']
         projects_details.save()
 
